@@ -3,6 +3,8 @@ package voweloreven.mfdemirel.com.voweloreven;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -19,8 +21,10 @@ public class MainActivity extends AppCompatActivity {
     int puan = 0;
     int count = 45;
     int combo = 0;
+    int id1, id2;
     TextView puanGoster, timerGoster;
     TextView ustTextView, altTextView;
+    Button yesButton, noButton;
     LinearLayout mainLayout;
 
     int category = 2; // oyun modu(harf-sayı=1 <> kelime-renk=2)
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             colorsColor2.add(colorsColor[i]);
             colorsString2.add(colorsString[i]);
         }
@@ -44,73 +48,93 @@ public class MainActivity extends AppCompatActivity {
 
         mainLayout = (LinearLayout) findViewById(R.id.main_layout);
 
-        final Button yesButton = (Button) findViewById(R.id.yesButton);
-        final Button noButton = (Button) findViewById(R.id.noButton);
-
-        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/goodtimes.ttf");
+        yesButton = (Button) findViewById(R.id.yesButton);
+        noButton = (Button) findViewById(R.id.noButton);
+        final SoundPool soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        id1 = soundPool.load(this,R.raw.water,1);
+        id2 = soundPool.load(this,R.raw.wrong,1);
+        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/trench.otf");
         ustTextView.setTypeface(face);
         altTextView.setTypeface(face);
+        yesButton.setTypeface(face);
+        noButton.setTypeface(face);
+
 
         puanGoster = (TextView) findViewById(R.id.puanGoster);
         timerGoster = (TextView) findViewById(R.id.timer);
-
+        puanGoster.setTypeface(face);
+        timerGoster.setTypeface(face);
         puanGoster.setText(String.valueOf(puan));
 
         final Thread timer = setupTimer();
         timer.start();
 
+        Random r = new Random();
+        category = r.nextInt(2);
         editTextViews();
 
         yesButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 if (!gameOver) {
-                    if(category == 1) {
+                    if (category == 0) {
                         if (ustOpen && !altOpen) {
                             if (vowel) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
 
                             } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         } else if (altOpen && !ustOpen) {
                             if (even) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
 
                             } else {
                                 puan -= 10;
                                 count--;
                                 combo = 0;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         }
                         if (combo == 5) {
                             count += 5;
                             combo = 0;
                         }
-                    } else if (category == 2){
+                    } else if (category == 1) {
                         ColorDrawable clrDrwble = (ColorDrawable) mainLayout.getBackground();
                         int bgColorIndex = colorsColor2.indexOf(clrDrwble.getColor());
-                        if(ustOpen && !altOpen){
-                            if(bgColorIndex == colorsString2.indexOf(ustTextView.getText())){
+                        if (ustOpen && !altOpen) {
+                            if (bgColorIndex == colorsString2.indexOf(ustTextView.getText())) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
-                            } else{
+                            } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         } else if (altOpen && !ustOpen) {
-                            if(bgColorIndex == colorsColor2.indexOf(altTextView.getCurrentTextColor())){
+                            if (bgColorIndex == colorsColor2.indexOf(altTextView.getCurrentTextColor())) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
-                            } else{
+                            } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         }
                         if (combo == 5) {
@@ -129,52 +153,65 @@ public class MainActivity extends AppCompatActivity {
 
             public void onClick(View v) {
                 if (!gameOver) {
-                    if(category == 1) {
+                    if (category == 0) {
                         if (ustOpen && !altOpen) {
                             if (!vowel) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
 
                             } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         } else if (altOpen && !ustOpen) {
                             if (!even) {
                                 puan += 10;
+                                soundPool.play(id1,100,100,1,0,1);
                                 combo++;
 
                             } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         }
 
                         if (combo == 5) {
                             count += 5;
+                            combo=0;
                         }
-                    } else if (category == 2){
+                    } else if (category == 1) {
                         ColorDrawable clrDrwble = (ColorDrawable) mainLayout.getBackground();
                         int bgColorIndex = colorsColor2.indexOf(clrDrwble.getColor());
-                        if(ustOpen && !altOpen){
-                            if(colorsString2.indexOf(ustTextView.getText()) != bgColorIndex){
+                        if (ustOpen && !altOpen) {
+                            if (colorsString2.indexOf(ustTextView.getText()) != bgColorIndex) {
                                 puan += 10;
                                 combo++;
-                            } else{
+                                soundPool.play(id1,100,100,1,0,1);
+                            } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         } else if (altOpen && !ustOpen) {
-                            if(colorsColor2.indexOf(altTextView.getCurrentTextColor()) != bgColorIndex){
+                            if (colorsColor2.indexOf(altTextView.getCurrentTextColor()) != bgColorIndex) {
                                 puan += 10;
                                 combo++;
-                            } else{
+                                soundPool.play(id1,100,100,1,0,1);
+                            } else {
                                 puan -= 10;
                                 combo = 0;
                                 count--;
+                                soundPool.play(id2,100,100,1,0,1);
+                                if(count<0) {count =0; timerGoster.setText(String.valueOf(count)); gameOver=true;}
                             }
                         }
                         if (combo == 5) {
@@ -184,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     puanGoster.setText(String.valueOf(puan));
                     editTextViews();
-                }
-                else{
+                } else {
                     ustTextView.setText("GAME");
                     altTextView.setText("OVER");
                 }
@@ -253,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         Random rand = new Random();
         boolean topOrBottom = rand.nextBoolean();
 
-        if (category == 1) {
+        if (category == 0) {
 
             boolean randomPriority = rand.nextBoolean();
 
@@ -283,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-        } else if (category == 2) {
+        } else if (category == 1) {
 
             int clrStr = rand.nextInt(5);
             int clrClr = rand.nextInt(5);
