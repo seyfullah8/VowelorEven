@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.Random;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-
+//// ilisu push yaptim
 public class MainActivity extends AppCompatActivity {
     boolean ustOpen, altOpen, vowel, even, gameOver;
     int puan = 0;
