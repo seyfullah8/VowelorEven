@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         puanGoster = (TextView) findViewById(R.id.puanGoster);
         timerGoster = (TextView) findViewById(R.id.timer);
         puanGoster.setText(String.valueOf(puan));
-
+    ///////// DEMIREL PUSH YAPTIM
         Thread t = new Thread() {
 
             @Override
