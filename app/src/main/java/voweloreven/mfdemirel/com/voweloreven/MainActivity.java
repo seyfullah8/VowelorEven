@@ -1,5 +1,6 @@
 package voweloreven.mfdemirel.com.voweloreven;
 
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,11 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.*;
 
 import java.util.Random;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+
 //// ilisu push yaptim
 public class MainActivity extends AppCompatActivity {
     boolean ustOpen, altOpen, vowel, even, gameOver;
@@ -29,14 +33,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        final Button ustButton = (Button) findViewById(R.id.ust);
-        final Button altButton = (Button) findViewById(R.id.alt);
+        final TextView ustButton = (TextView) findViewById(R.id.ust);
+        final TextView altButton = (TextView) findViewById(R.id.alt);
         final Button yesButton = (Button) findViewById(R.id.yesButton);
         final Button noButton = (Button) findViewById(R.id.noButton);
+        Typeface face= Typeface.createFromAsset(getAssets(), "fonts/goodtimes.ttf");
+        ustButton.setTypeface(face);
+        altButton.setTypeface(face);
         puanGoster = (TextView) findViewById(R.id.puanGoster);
         timerGoster = (TextView) findViewById(R.id.timer);
         puanGoster.setText(String.valueOf(puan));
-    ///////// DEMIREL PUSH YAPTIM
+        ///////// DEMIREL PUSH YAPTIM
         Thread t = new Thread() {
 
             @Override
@@ -61,10 +68,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         t.start();
-
-
         editButtons(ustButton, altButton);
-
         yesButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             puan -= 10;
                             combo = 0;
+                            count--;
                         }
                     }
                     if (altOpen) {
@@ -86,11 +91,14 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             puan -= 10;
+                            count--;
                             combo = 0;
                         }
                     }
-                    if (combo == 5)
+                    if (combo == 5) {
                         count += 5;
+                        combo=0;
+                    }
                     puanGoster.setText(String.valueOf(puan));
                     editButtons(ustButton, altButton);
                 }
@@ -109,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             puan -= 10;
                             combo = 0;
+                            count--;
                         }
                     }
                     if (altOpen) {
@@ -119,17 +128,17 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             puan -= 10;
                             combo = 0;
+                            count--;
                         }
                     }
-                    if (combo == 5)
+                    if (combo == 5) {
                         count += 5;
+                    }
                     puanGoster.setText(String.valueOf(puan));
                     editButtons(ustButton, altButton);
                 }
             }
         });
-
-
     }
 
     public String RandomLetter() {
@@ -159,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         return returnvalue;
     }
 
-    public void editButtons(Button ustButton, Button altButton) {
+    public void editButtons(TextView ustButton, TextView altButton) {
         String ustButtonText = "";
         String altButtonText = "";
         Random r = new Random();
