@@ -1,22 +1,17 @@
 package voweloreven.mfdemirel.com.voweloreven;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.*;
-
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 //// ilisu push yaptim
 public class MainActivity extends AppCompatActivity {
@@ -24,26 +19,183 @@ public class MainActivity extends AppCompatActivity {
     int puan = 0;
     int count = 45;
     int combo = 0;
-    TextView puanGoster;
-    TextView timerGoster;
+    TextView puanGoster, timerGoster;
+    TextView ustTextView, altTextView;
+    LinearLayout mainLayout;
+
+    int category = 2; // oyun modu(harf-sayı=1 <> kelime-renk=2)
+    String[] colorsString = {"RED", "GREEN", "BLUE", "YELLOW", "BLACK"};
+    ArrayList<String> colorsString2 = new ArrayList<String>();
+    int[] colorsColor = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLACK};
+    ArrayList<Integer> colorsColor2 = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        for(int i = 0; i < 5; i++) {
+            colorsColor2.add(colorsColor[i]);
+            colorsString2.add(colorsString[i]);
+        }
 
-        final TextView ustButton = (TextView) findViewById(R.id.ust);
-        final TextView altButton = (TextView) findViewById(R.id.alt);
+        ustTextView = (TextView) findViewById(R.id.ust);
+        altTextView = (TextView) findViewById(R.id.alt);
+
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
+
         final Button yesButton = (Button) findViewById(R.id.yesButton);
         final Button noButton = (Button) findViewById(R.id.noButton);
-        Typeface face= Typeface.createFromAsset(getAssets(), "fonts/goodtimes.ttf");
-        ustButton.setTypeface(face);
-        altButton.setTypeface(face);
+
+        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/goodtimes.ttf");
+        ustTextView.setTypeface(face);
+        altTextView.setTypeface(face);
+
         puanGoster = (TextView) findViewById(R.id.puanGoster);
         timerGoster = (TextView) findViewById(R.id.timer);
+
         puanGoster.setText(String.valueOf(puan));
-        ///////// DEMIREL PUSH YAPTIM
+
+        final Thread timer = setupTimer();
+        timer.start();
+
+        editTextViews();
+
+        yesButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                if (!gameOver) {
+                    if(category == 1) {
+                        if (ustOpen && !altOpen) {
+                            if (vowel) {
+                                puan += 10;
+                                combo++;
+
+                            } else {
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        } else if (altOpen && !ustOpen) {
+                            if (even) {
+                                puan += 10;
+                                combo++;
+
+                            } else {
+                                puan -= 10;
+                                count--;
+                                combo = 0;
+                            }
+                        }
+                        if (combo == 5) {
+                            count += 5;
+                            combo = 0;
+                        }
+                    } else if (category == 2){
+                        ColorDrawable clrDrwble = (ColorDrawable) mainLayout.getBackground();
+                        int bgColorIndex = colorsColor2.indexOf(clrDrwble.getColor());
+                        if(ustOpen && !altOpen){
+                            if(bgColorIndex == colorsString2.indexOf(ustTextView.getText())){
+                                puan += 10;
+                                combo++;
+                            } else{
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        } else if (altOpen && !ustOpen) {
+                            if(bgColorIndex == colorsColor2.indexOf(altTextView.getCurrentTextColor())){
+                                puan += 10;
+                                combo++;
+                            } else{
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        }
+                        if (combo == 5) {
+                            count += 5;
+                            combo = 0;
+                        }
+                    }
+                    puanGoster.setText(String.valueOf(puan));
+                    editTextViews();
+                } else{
+                    ustTextView.setText("GAME");
+                    altTextView.setText("OVER");
+                }
+            }
+        });
+
+        noButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                if (!gameOver) {
+                    if(category == 1) {
+                        if (ustOpen && !altOpen) {
+                            if (!vowel) {
+                                puan += 10;
+                                combo++;
+
+                            } else {
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        } else if (altOpen && !ustOpen) {
+                            if (!even) {
+                                puan += 10;
+                                combo++;
+
+                            } else {
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        }
+
+                        if (combo == 5) {
+                            count += 5;
+                        }
+                    } else if (category == 2){
+                        ColorDrawable clrDrwble = (ColorDrawable) mainLayout.getBackground();
+                        int bgColorIndex = colorsColor2.indexOf(clrDrwble.getColor());
+                        if(ustOpen && !altOpen){
+                            if(colorsString2.indexOf(ustTextView.getText()) != bgColorIndex){
+                                puan += 10;
+                                combo++;
+                            } else{
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        } else if (altOpen && !ustOpen) {
+                            if(colorsColor2.indexOf(altTextView.getCurrentTextColor()) != bgColorIndex){
+                                puan += 10;
+                                combo++;
+                            } else{
+                                puan -= 10;
+                                combo = 0;
+                                count--;
+                            }
+                        }
+                        if (combo == 5) {
+                            count += 5;
+                            combo = 0;
+                        }
+                    }
+                    puanGoster.setText(String.valueOf(puan));
+                    editTextViews();
+                }
+                else{
+                    ustTextView.setText("GAME");
+                    altTextView.setText("OVER");
+                }
+            }
+        });
+    }
+
+    private Thread setupTimer() {
         Thread t = new Thread() {
 
             @Override
@@ -66,79 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-        t.start();
-        editButtons(ustButton, altButton);
-        yesButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                if (!gameOver) {
-                    if (ustOpen) {
-                        if (vowel) {
-                            puan += 10;
-                            combo++;
-
-                        } else {
-                            puan -= 10;
-                            combo = 0;
-                            count--;
-                        }
-                    }
-                    if (altOpen) {
-                        if (even) {
-                            puan += 10;
-                            combo++;
-
-                        } else {
-                            puan -= 10;
-                            count--;
-                            combo = 0;
-                        }
-                    }
-                    if (combo == 5) {
-                        count += 5;
-                        combo=0;
-                    }
-                    puanGoster.setText(String.valueOf(puan));
-                    editButtons(ustButton, altButton);
-                }
-            }
-        });
-
-        noButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                if (!gameOver) {
-                    if (ustOpen) {
-                        if (!vowel) {
-                            puan += 10;
-                            combo++;
-
-                        } else {
-                            puan -= 10;
-                            combo = 0;
-                            count--;
-                        }
-                    }
-                    if (altOpen) {
-                        if (!even) {
-                            puan += 10;
-                            combo++;
-
-                        } else {
-                            puan -= 10;
-                            combo = 0;
-                            count--;
-                        }
-                    }
-                    if (combo == 5) {
-                        count += 5;
-                    }
-                    puanGoster.setText(String.valueOf(puan));
-                    editButtons(ustButton, altButton);
-                }
-            }
-        });
+        return t;
     }
 
     public String RandomLetter() {
@@ -152,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return returnvalue;
     }
-
 
     public int RandomNumber() {
         int[] numbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -168,39 +247,78 @@ public class MainActivity extends AppCompatActivity {
         return returnvalue;
     }
 
-    public void editButtons(TextView ustButton, TextView altButton) {
+    public void editTextViews() {
+
         String ustButtonText = "";
         String altButtonText = "";
-        Random r = new Random();
-        int randomgame = r.nextInt(2);
-        if (randomgame == 0) {
-            ustOpen = true;
-            altOpen = false;
 
-            Random t = new Random();
-            int randomButton = r.nextInt(2);
-            if (randomButton == 0) {
-                ustButtonText = RandomLetter() + String.valueOf(RandomNumber());
-            } else
-                ustButtonText = String.valueOf(RandomNumber()) + RandomLetter();
-            altButtonText = "";
+        Random rand = new Random();
+        boolean topOrBottom = rand.nextBoolean();
 
-        } else {
-            ustOpen = false;
-            altOpen = true;
+        if (category == 1) {
 
-            Random t = new Random();
-            int randomButton = r.nextInt(2);
-            if (randomButton == 0) {
-                altButtonText = RandomLetter() + String.valueOf(RandomNumber());
-            } else
-                altButtonText = String.valueOf(RandomNumber()) + RandomLetter();
-            ustButtonText = "";
+            boolean randomPriority = rand.nextBoolean();
 
+            if (topOrBottom) {
+
+                ustOpen = true;
+                altOpen = false;
+
+                if (randomPriority) {
+                    ustButtonText = RandomLetter() + String.valueOf(RandomNumber());
+                } else {
+                    ustButtonText = String.valueOf(RandomNumber()) + RandomLetter();
+                }
+                altButtonText = "";
+
+            } else {
+
+                ustOpen = false;
+                altOpen = true;
+
+                if (randomPriority) {
+                    altButtonText = RandomLetter() + String.valueOf(RandomNumber());
+                } else {
+                    altButtonText = String.valueOf(RandomNumber()) + RandomLetter();
+                }
+                ustButtonText = "";
+
+            }
+
+        } else if (category == 2) {
+
+            int clrStr = rand.nextInt(5);
+            int clrClr = rand.nextInt(5);
+            int bckgrnd = rand.nextInt(5);
+
+            ustTextView.setBackgroundColor(Color.WHITE);
+            altTextView.setBackgroundColor(Color.WHITE);
+
+            if (topOrBottom) {
+
+                ustOpen = true;
+                altOpen = false;
+
+                ustButtonText = colorsString[clrStr];
+                ustTextView.setTextColor(colorsColor[clrClr]);
+                altButtonText = "";
+
+            } else {
+
+                ustOpen = false;
+                altOpen = true;
+
+                ustButtonText = "";
+                altButtonText = colorsString[clrStr];
+                altTextView.setTextColor(colorsColor[clrClr]);
+
+            }
+
+            mainLayout.setBackgroundColor(colorsColor[bckgrnd]);
         }
 
-        ustButton.setText(ustButtonText);
-        altButton.setText(altButtonText);
+        ustTextView.setText(ustButtonText);
+        altTextView.setText(altButtonText);
     }
 }
 
