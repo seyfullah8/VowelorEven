@@ -120,9 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     puanGoster.setText(String.valueOf(puan));
                     editTextViews();
-                } else{
-                    ustTextView.setText("GAME");
-                    altTextView.setText("OVER");
+
                 }
             }
         });
